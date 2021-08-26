@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mischief Committee</title>
+  <style>body {
+    background: WhiteSmoke
+  }
+  .header {
+    text-align: center;
+  }
+  #h1 {
+    font-size: 2em;
+    font-weight: bold;
+  }
+  #picture {
+    width: 344px;
+    height: 334px;
+  }
+  #h2 {
+    font-size: 1em;
+    font-weight: normal;
+    font-style: italic;
+    margin: 10% 0px;
+  }
+  .post {
+    max-width: 500px;
+    margin: 5% auto 5% auto;
+    text-align: center;
+  }
+  #formUsername {
+    padding: 2%;
+    width: 96%;
+    outline: none;
+    resize: none;
+    border: 1px solid grey;
+    margin: 5% auto;
+  }
+  #formMessage {
+    padding: 2%;
+    width: 96%;
+    min-height: 8em;
+    outline: none;
+    resize: none;
+    border: 1px solid grey;
+    margin: 5% auto;
+  }
+  .messages{
+    margin: auto;
+    max-width: 500px;
+    border-style: solid none none none;
+    border-color: grey;
+    border-width: 1px;
+  }
+  .container {
+    padding: 10px;
+    border-style: none none solid none;
+    border-color: grey;
+    border-width: 1px;
+    color: black;
+  }
+  #username {
+    margin: 0px;
+    padding: 0px;
+    font-size: 0.75em;
+    font-weight: bold;
+  }
+  #date {
+    margin: 0px;
+    padding: 0px;
+    font-size: 0.6em;
+  }
+  #message {
+    margin: 0px 1%;
+    padding: 10px;
+    font-size: 1em;
+    color: black;
+  }</style>
+  <script>
+    if ( window.history.replaceState ) {
+      window.history.replaceState( null, null, window.location.href );
+    }
+    </script>
+</head>
+<body>
+  <div class="header" id="header">
+    <p id="h1">Leave a message!</p>
+    <img id="picture" src="travolta.webp" alt="John Travolta from Pulp Fiction looking around">
+    <p id="h2">- Mischief Committee</p>
+  </div>
+  <div class="post" id="post">
+    <form id="form" action="/qrcode/" method="post">
+      <div>
+        <label for="formUsername">Username:</label><br>
+        <input type="text" id="formUsername" name="username" maxlength="30" required/>
+      </div>
+      <div>
+        <label for="formMessage">Message:</label><br>
+        <textarea id="formMessage" name="message" maxlength="300" required></textarea>
+      </div>
+      <div>
+        <input type="submit" value="Submit">
+      </div>
+    </form>
+  </div>
+  <div class="messages" id="messages">
+
+  </div>
+  <script>
+    const serverURL = window.location.href + "getMsg"
+
+    window.addEventListener('load', (event) => {
+        fetch(serverURL,  {
+          method: 'GET',
+        })
+        .then(function(response) {
+            if (response.status !== 200) {
+              return console.log('Response: ' + response.status);
+            }
+            response.json().then(data => {showMsg(data);});
+          }
+        )
+    
+        .catch((error) => {console.error('Error: ', error);});
+    });
+
+    function showMsg(docs) {
+      document.getElementById("messages").innerHTML = "";
+      console.log(docs);
+      var i = 0;
+      while (i < docs.rows.length){
+        var options = { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+        var split = docs.rows[i].doc._id.split(";"); 
+        var username = split[1];
+        var date = new Date(split[0]);
+        var message = decodeURI(docs.rows[i].doc.message); 
+            
+        var container = document.createElement("div");
+        container.id = i;
+        container.className = "container";
+        document.getElementById("messages").appendChild(container);
+          
+        var node0 = document.createElement("span");
+        node0.id = "username";
+        var textnode = document.createTextNode(username);
+        node0.appendChild(textnode);
+        document.getElementById(i).appendChild(node0);
+            
+        var node1 = document.createElement("span");
+        node1.id = "date";
+        textnode = document.createTextNode(" • " + date.toLocaleString("en-US", options));
+        node1.appendChild(textnode);
+        document.getElementById(i).appendChild(node1);
+        
+        var node2 = document.createElement("p");
+        node2.id = "message";
+        textnode = document.createTextNode(message);
+        node2.appendChild(textnode);
+        document.getElementById(i).appendChild(node2);
+           
+        i++;
+      }  
+    }
+  </script>
+</body>
+</html>
