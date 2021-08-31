@@ -108,12 +108,11 @@
 
   </div>
   <script>
-    const serverURL = "http://207.195.41.94/" + "getMsg"
-    //const serverURL = window.location.href + "getMsg"
+    const serverURL = window.location.href + "getMsg"
     console.log(serverURL)
 
     window.addEventListener('load', (event) => {
-        fetch("http://207.195.41.94/getMsg",  {
+        fetch(serverURL,  {
           method: 'GET',
         })
         .then(function(response) {
